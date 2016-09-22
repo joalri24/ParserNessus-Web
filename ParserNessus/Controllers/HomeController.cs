@@ -10,6 +10,16 @@ namespace ParserNessus.Controllers
 {
     public class HomeController : Controller
     {
+
+        // ------------------------------------------------------------
+        // Properties
+        // ------------------------------------------------------------
+
+
+        // ------------------------------------------------------------
+        // Actions
+        // ------------------------------------------------------------
+
         public ActionResult Index()
         {
             return View();
@@ -34,18 +44,34 @@ namespace ParserNessus.Controllers
             return View();
         }
 
+        /// <summary>
+        /// Uploads a file onto the server.
+        /// </summary>
+        /// <param name="file"></param>
+        /// <returns></returns>
         [HttpPost]
         public ActionResult Upload(HttpPostedFileBase file)
         {
 
+            ViewBag.Lines = new string[] { "nada", "más nada"};
             if (file.ContentLength > 0)
             {
                 var fileName = Path.GetFileName(file.FileName);
                 var path = Path.Combine(Server.MapPath("~/App_Data/uploads"), fileName);
                 file.SaveAs(path);
+
+                string[] lines = System.IO.File.ReadAllLines(path);
+                ViewBag.Lines = lines;
             }
 
-            return RedirectToAction("Index");
+
+            return View("File");
         }
+
+
+        // ------------------------------------------------------------
+        // Methods
+        // ------------------------------------------------------------
+
     }
 }
