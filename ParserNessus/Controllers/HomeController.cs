@@ -15,7 +15,7 @@ namespace ParserNessus.Controllers
         // Properties
         // ------------------------------------------------------------
 
-
+        string Filename = "";
         // ------------------------------------------------------------
         // Actions
         // ------------------------------------------------------------
@@ -62,12 +62,20 @@ namespace ParserNessus.Controllers
 
                 string[] lines = System.IO.File.ReadAllLines(path);
                 ViewBag.Lines = lines;
+                return RedirectToAction("Download", new { FileName = path });
             }
 
 
             return View("File");
+            
         }
 
+        public FileResult Download(string FileName)
+        {
+            byte[] fileBytes = System.IO.File.ReadAllBytes(FileName);
+            string fileName = "myfile.ext";
+            return File(fileBytes, System.Net.Mime.MediaTypeNames.Application.Octet, fileName);
+        }
 
         // ------------------------------------------------------------
         // Methods
