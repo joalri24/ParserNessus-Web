@@ -83,9 +83,17 @@ namespace ParserNessus.Controllers
         /// <param name="file"></param>
         /// <returns></returns>
         [HttpPost]
-        public ActionResult Upload(HttpPostedFileBase file, bool NoSeverity = false)
+        public ActionResult Upload(HttpPostedFileBase file, bool NoSeverity = false, bool Sinopsis = true,
+                                                            bool Ip = true, bool Port = true,
+                                                            bool Description = false, bool Solution = false,
+                                                            bool NetBios = false, bool Protocol = false,
+                                                            bool Severity = false, bool Exploitable = false,
+                                                            bool Cve = false, bool Bid = false,
+                                                            bool Cvss = false, bool PlugIn = false,
+                                                            bool SeeAlso = false, bool Xref = false,
+                                                            bool OS = false, bool Mac = false)
         {
-            //System.Diagnostics.Debug.WriteLine(NoSeverity);
+            //System.Diagnostics.Debug.WriteLine("Severity0= " + NoSeverity);
             if (file.ContentLength > 0)
             {
                 var fileName = Path.GetFileName(file.FileName);
@@ -94,7 +102,7 @@ namespace ParserNessus.Controllers
                 
                 // Reads the uploaded file and generates the cvs file.
                 AuxReport reporte = ReadFile(path,NoSeverity);
-                string newPath = WriteCsvFile(reporte); 
+                string newPath = WriteCsvFile(reporte, Sinopsis, Ip, Port, Description, Solution, NetBios, Protocol, Severity, Exploitable, Cve, Bid, Cvss, PlugIn, SeeAlso, Xref, OS, Mac);
 
                 return RedirectToAction("Download", new { path = newPath, fileName = reporte.Report.Name + ".cvs" });
             }
@@ -626,7 +634,15 @@ namespace ParserNessus.Controllers
         /// Returns a string with the generated file path. 
         /// </summary>
         /// <param name="Report"></param>
-        private string WriteCsvFile(AuxReport Report)
+        private string WriteCsvFile(AuxReport Report, bool IncludeSinopsis, bool IncludeIp, 
+                                                      bool IncludePort, bool IncludeDescription,
+                                                      bool IncludeSolution, bool IncludeNetBios,
+                                                      bool IncludeProtocol, bool IncludeSeverity,
+                                                      bool IncludeExploitable, bool IncludeCve,
+                                                      bool IncludeBid, bool IncludeCvss, 
+                                                      bool IncludePlugIn, bool IncludeSeeAlso,
+                                                      bool IncludeXref, bool IncludeOS,
+                                                      bool IncludeMac)
         {
 
             // El número total de filas que debe tener el archivo de salida.
@@ -642,119 +658,119 @@ namespace ParserNessus.Controllers
             // Escribe el encabezado
             StringBuilder fila = new StringBuilder();
             // Sinopsis
-            //if (checkBoxSinopsis.Checked)
+            if (IncludeSinopsis)
             {
                 fila.Append(ENCABEZADO_SINOPSIS);
                 fila.Append(SEPARADOR);
             }
 
             // Descripción
-            //if (checkBoxDescripcion.Checked)
+            if (IncludeDescription)
             {
                 fila.Append(ENCABEZADO_DESCRIPCION);
                 fila.Append(SEPARADOR);
             }
 
             // Solución
-            //if (checkBoxSolucion.Checked)
+            if (IncludeSolution)
             {
                 fila.Append(ENCABEZADO_SOLUCION);
                 fila.Append(SEPARADOR);
             }
 
             // IP
-            //if (checkBoxIP.Checked)
+            if (IncludeIp)
             {
                 fila.Append(ENCABEZADO_IP);
                 fila.Append(SEPARADOR);
             }
 
             // Puerto
-            //if (checkBoxPuerto.Checked)
+            if (IncludePort)
             {
                 fila.Append(ENCABEZADO_PUERTO);
                 fila.Append(SEPARADOR);
             }
 
             // Net-bios name
-            //if (checkBoxNetBios.Checked)
+            if (IncludeNetBios)
             {
                 fila.Append(ENCABEZADO_NET_BIOS_NAME);
                 fila.Append(SEPARADOR);
             }
 
             // Protocolo
-            //if (checkBoxProtocolo.Checked)
+            if (IncludeProtocol)
             {
                 fila.Append(ENCABEZADO_PROTOCOLO);
                 fila.Append(SEPARADOR);
             }
 
             // Risk factor (severidad)
-            //if (checkBoxSeveridad.Checked)
+            if (IncludeSeverity)
             {
                 fila.Append(ENCABEZADO_SEVERIDAD);
                 fila.Append(SEPARADOR);
             }
 
             // Explotable
-            //if (checkBoxExploit.Checked)
+            if (IncludeExploitable)
             {
                 fila.Append(ENCABEZADO_EXPLOIT_AVAILABLE);
                 fila.Append(SEPARADOR);
             }
 
             // cve
-            //if (checkBoxCve.Checked)
+            if (IncludeCve)
             {
                 fila.Append(ENCABEZADO_CVE);
                 fila.Append(SEPARADOR);
             }
 
             // BID
-            //if (checkBoxBid.Checked)
+            if (IncludeBid)
             {
                 fila.Append(ENCABEZADO_BID);
                 fila.Append(SEPARADOR);
             }
 
             // cvss score 
-            //if (checkBoxCvss.Checked)
+            if (IncludeCvss)
             {
                 fila.Append(ENCABEZADO_CVSS_SCORE);
                 fila.Append(SEPARADOR);
             }
 
             // Plug-in name
-            //if (checkBoxPlugin.Checked)
+            if (IncludePlugIn)
             {
                 fila.Append(ENCABEZADO_PLUG_IN_NAME);
                 fila.Append(SEPARADOR);
             }
 
             // See Also
-            //if (checkBoxInfoAdicional.Checked)
+            if (IncludeSeeAlso)
             {
                 fila.Append(ENCABEZADO_SEE_ALSO);
                 fila.Append(SEPARADOR);
             }
 
             // Xref
-            //if (checkBoxXref.Checked)
+            if (IncludeXref)
             {
                 fila.Append(ENCABEZADO_XREF);
                 fila.Append(SEPARADOR);
             }
 
             // Dirección mac
-            //if (checkBoxMac.Checked)
+            if (IncludeMac)
             {
                 fila.Append(ENCABEZADO_MAC);
                 fila.Append(SEPARADOR);
             }
 
             // Sistema Operativo
-            //if (checkBoxOS.Checked)
+            if (IncludeOS)
             {
                 fila.Append(ENCABEZADO_SISTEMA_OPERATIVO);
                 fila.Append(SEPARADOR);
@@ -771,7 +787,7 @@ namespace ParserNessus.Controllers
                     string temp = "";
 
                     // Sinopsis
-                    //if (checkBoxSinopsis.Checked)
+                    if (IncludeSinopsis)
                     {
                         temp = vulnerabilidad.Sinopsis.Replace(SEPARADOR, '.');  // Limpia el campo para que no tenga el caracter separador.
                         fila.Append(temp.TrimStart('-'));
@@ -779,7 +795,7 @@ namespace ParserNessus.Controllers
                     }
 
                     // Descripción
-                    //if (checkBoxDescripcion.Checked)
+                    if (IncludeDescription)
                     {
                         temp = vulnerabilidad.Description.Replace(SEPARADOR, '.');  // Limpia el campo para que no tenga el caracter separador.
                         fila.Append(temp.TrimStart('-'));
@@ -787,7 +803,7 @@ namespace ParserNessus.Controllers
                     }
 
                     // Solución
-                    //if (checkBoxSolucion.Checked)
+                    if (IncludeSolution)
                     {
                         temp = vulnerabilidad.Solution.Replace(SEPARADOR, '.');  // Limpia el campo para que no tenga el caracter separador.
                         fila.Append(temp.TrimStart('-'));
@@ -795,7 +811,7 @@ namespace ParserNessus.Controllers
                     }
 
                     // ip
-                    //if (checkBoxIP.Checked)
+                    if (IncludeIp)
                     {
                         temp = host.Host.HostIp.Replace(SEPARADOR, '.');  // Limpia el campo para que no tenga el caracter separador.
                         fila.Append(temp);
@@ -803,7 +819,7 @@ namespace ParserNessus.Controllers
                     }
 
                     // puerto
-                    //if (checkBoxPuerto.Checked)
+                    if (IncludePort)
                     {
                         temp = vulnerabilidad.Port.Replace(SEPARADOR, '.');  // Limpia el campo para que no tenga el carater separador.
                         fila.Append(temp);
@@ -811,7 +827,7 @@ namespace ParserNessus.Controllers
                     }
 
                     // Nombre de bios
-                    //if (checkBoxNetBios.Checked)
+                    if (IncludeNetBios)
                     {
                         temp = host.Host.NetBiosName.Replace(SEPARADOR, '.');  // Limpia el campo para que no tenga el carater separador.
                         fila.Append(temp);
@@ -819,7 +835,7 @@ namespace ParserNessus.Controllers
                     }
 
                     // Protocolo
-                    //if (checkBoxProtocolo.Checked)
+                    if (IncludeProtocol)
                     {
                         temp = vulnerabilidad.Protocol.Replace(SEPARADOR, '.');  // Limpia el campo para que no tenga el carater separador.
                         fila.Append(temp);
@@ -827,7 +843,7 @@ namespace ParserNessus.Controllers
                     }
 
                     // Severidad (en palabras)
-                    //if (checkBoxSeveridad.Checked)
+                    if (IncludeSeverity)
                     {
                         temp = vulnerabilidad.RiskFactor.Replace(SEPARADOR, '.');  // Limpia el campo para que no tenga el carater separador.
                         fila.Append(temp);
@@ -835,7 +851,7 @@ namespace ParserNessus.Controllers
                     }
 
                     // ¿Existe exploit?
-                    //if (checkBoxExploit.Checked)
+                    if (IncludeExploitable)
                     {
                         temp = vulnerabilidad.ExploitAvailable.ToString();
                         fila.Append(temp);
@@ -843,7 +859,7 @@ namespace ParserNessus.Controllers
                     }
 
                     // cve 
-                    //if (checkBoxCve.Checked)
+                    if (IncludeCve)
                     {
                         temp = vulnerabilidad.Cve.Replace(SEPARADOR, '.');  // Limpia el campo para que no tenga el carater separador.
                         fila.Append(temp);
@@ -851,7 +867,7 @@ namespace ParserNessus.Controllers
                     }
 
                     // bid
-                    //if (checkBoxBid.Checked)
+                    if (IncludeBid)
                     {
                         temp = vulnerabilidad.Bid.Replace(SEPARADOR, '.');  // Limpia el campo para que no tenga el carater separador.
                         fila.Append(temp);
@@ -859,7 +875,7 @@ namespace ParserNessus.Controllers
                     }
 
                     // Puntaje cvss
-                    //if (checkBoxCvss.Checked)
+                    if (IncludeCvss)
                     {
                         temp = vulnerabilidad.CvssTemporalScore.Replace(SEPARADOR, '.');  // Limpia el campo para que no tenga el carater separador.
                         fila.Append(temp);
@@ -867,7 +883,7 @@ namespace ParserNessus.Controllers
                     }
 
                     // Nombre plug in
-                    //if (checkBoxPlugin.Checked)
+                    if (IncludePlugIn)
                     {
                         temp = vulnerabilidad.PluginName.Replace(SEPARADOR, '.');  // Limpia el campo para que no tenga el carater separador.
                         fila.Append(temp);
@@ -875,7 +891,7 @@ namespace ParserNessus.Controllers
                     }
 
                     // See also
-                    //if (checkBoxInfoAdicional.Checked)
+                    if (IncludeSeeAlso)
                     {
                         temp = vulnerabilidad.SeeAlso.Replace(SEPARADOR, '.');  // Limpia el campo para que no tenga el carater separador.
                         fila.Append(temp);
@@ -883,7 +899,7 @@ namespace ParserNessus.Controllers
                     }
 
                     // Xref
-                    //if (checkBoxXref.Checked)
+                    if (IncludeXref)
                     {
                         temp = vulnerabilidad.Xref.Replace(SEPARADOR, '.');  // Limpia el campo para que no tenga el carater separador.
                         fila.Append(temp);
@@ -891,7 +907,7 @@ namespace ParserNessus.Controllers
                     }
 
                     // mac
-                    //if (checkBoxMac.Checked)
+                    if (IncludeMac)
                     {
                         temp = host.Host.Mac.Replace(SEPARADOR, '.');  // Limpia el campo para que no tenga el carater separador.
                         fila.Append(temp);
@@ -899,7 +915,7 @@ namespace ParserNessus.Controllers
                     }
 
                     // Sistema operativo
-                    //if (checkBoxOS.Checked)
+                    if (IncludeOS)
                     {
                         temp = host.Host.OperativeSystem.Replace(SEPARADOR, '.');  // Limpia el campo para que no tenga el carater separador.
                         fila.Append(temp);

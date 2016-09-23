@@ -6,16 +6,37 @@
     ViewBag.Title = "Upload";
 }
 
-<h2>Upload File</h2>
+<h2>Upload a Nessus Report</h2>
 
 @using (Html.BeginForm("Upload", "Upload", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
-    <p>
-        <label for="file">Filename:</label>
+    <p>      
         <input type="file" name="file" id="file" />
     </p>
 
-    <p><input type="checkbox" name="NoSeverity" id="NoSeverity" value="true"/>Include items with severity 0</p>
+    <p> <input type="checkbox" name="NoSeverity" id="NoSeverity" value="true"/>Include items with severity 0</p> 
+    <p><label>Include:</label></p>
+    <p>      
+        <input type="checkbox" name="Sinopsis" id="Sinopsis" value="true" checked disabled/>Sinopsis
+        <input type="checkbox" name="Ip" id="Ip" value="true" checked disabled />Ip Address
+        <input type="checkbox" name="Port" id="Port" value="true" checked disabled />Port
+    </p>
+    <p>
+        <input type="checkbox" name="Description" id="Description" value="true" checked />Description
+        <input type="checkbox" name="Solution" id="Solution" value="true" checked />Solution
+        <input type="checkbox" name="NetBios" id="NetBios" value="true" checked />NetBios name
+        <input type="checkbox" name="Protocol" id="Protocol" value="true" checked />Protocol
+        <input type="checkbox" name="Severity" id="Severity" value="true" checked />Severity
+        <input type="checkbox" name="Exploitable" id="Exploitable" value="true" checked />Exploitable
+        <input type="checkbox" name="Cve" id="Cve" value="true" checked />Cve
+        <input type="checkbox" name="Bid" id="Bid" value="true" checked />Bid
+        <input type="checkbox" name="Cvss" id="Cvss" value="true" checked />Cvss
+        <input type="checkbox" name="PlugIn" id="PlugIn" value="true" checked />PlugIn
+        <input type="checkbox" name="SeeAlso" id="SeeAlso" value="true" checked />SeeAlso
+        <input type="checkbox" name="Xref" id="Xref" value="true" checked />Xref
+        <input type="checkbox" name="OS" id="OS" value="true" checked />OS
+        <input type="checkbox" name="Mac" id="Mac" value="true" checked />Mac
+    </p>
     <p><input type="submit" /></p>
 }
 
