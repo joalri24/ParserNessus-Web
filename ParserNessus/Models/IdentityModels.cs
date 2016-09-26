@@ -21,7 +21,7 @@ namespace ParserNessus.Models
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
         public ApplicationDbContext()
-            : base("DefaultConnection", throwIfV1Schema: false)
+            : base("ParserNessus", throwIfV1Schema: false)
         {
         }
 
@@ -29,5 +29,11 @@ namespace ParserNessus.Models
         {
             return new ApplicationDbContext();
         }
+
+        public System.Data.Entity.DbSet<ParserNessus.Models.Report> Reports { get; set; }
+
+        public System.Data.Entity.DbSet<ParserNessus.Models.Vulnerability> Vulnerabilities { get; set; }
+
+        public System.Data.Entity.DbSet<ParserNessus.Models.Host> Hosts { get; set; }
     }
 }

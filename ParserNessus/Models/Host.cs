@@ -7,9 +7,10 @@ namespace ParserNessus.Models
 {
     public class Host
     {
+        public int Id { get; set; }
         public string HostName { get; set; }
-        public string HostEnd { get; set; }
-        public string HostStart { get; set; }
+        public DateTime HostEnd { get; set; }
+        public DateTime HostStart { get; set; }
         public string HostIp { get; set; }
         public string OperativeSystem { get; set; }
         public string Mac { get; set; }

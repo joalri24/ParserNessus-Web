@@ -1,6 +1,7 @@
 ﻿using ParserNessus.Models;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -94,7 +95,7 @@ namespace ParserNessus.Controllers
                                                             bool OS = false, bool Mac = false)
         {
             //System.Diagnostics.Debug.WriteLine("Severity0= " + NoSeverity);
-            if (file.ContentLength > 0)
+            if (file != null && file.ContentLength > 0)
             {
                 var fileName = Path.GetFileName(file.FileName);
                 var path = Path.Combine(Server.MapPath(UPLOAD_DIR), fileName);
@@ -320,14 +321,36 @@ namespace ParserNessus.Controllers
                     }
 
                     // Agrega la información al objeto host y lo agrega a la lista de hosts
-                    host.Host.HostName = hostname;
-                    host.Host.HostEnd = hostEnd;
-                    host.Host.HostStart = hostStart;
+                    host.Host.HostName = hostname;                              
                     host.Host.OperativeSystem = operativeSystem;
                     host.Host.HostIp = hostIp;
                     host.Host.Mac = mac;
                     host.Host.NetBiosName = netbiosName;
                     reporte.Hosts.Add(host);
+                    
+                    // Converts the date fields.
+                    // ex: Thu Jul 28 12:55:38 2016
+                    Dictionary<string, int> months = new Dictionary<string, int>()
+                    {
+                        {"Jan",1 }, {"Feb",2 },{"Mar",3 },{"Apr",4 },
+                        {"May",5 },{"Jun",6 },{"Jul",7 },{"Aug",8 },
+                        {"Sep",9 },{"Oct",10 },{"Nov",11 },{"Dec",12 }
+                    };
+                    string[] dateInfo = hostStart.Split(' ');
+                    int month = months[dateInfo[1]];
+                    int year = Convert.ToInt16(dateInfo[4]);
+                    int day = Convert.ToInt16(dateInfo[2]);
+                    string time = dateInfo[3];
+                    DateTime date = DateTime.ParseExact(String.Join("/", new int[] { day, month, year }) + " " + time, "d/M/yyyy HH:mm:ss", CultureInfo.InvariantCulture);
+                    host.Host.HostStart = date;
+
+                    dateInfo = hostEnd.Split(' ');
+                    month = months[dateInfo[1]];
+                    year = Convert.ToInt16(dateInfo[4]);
+                    day = Convert.ToInt16(dateInfo[2]);
+                    time = dateInfo[3];
+                    date = DateTime.ParseExact(String.Join("/", new int[] { day, month, year }) + " " + time, "d/M/yyyy HH:mm:ss", CultureInfo.InvariantCulture);
+                    host.Host.HostEnd = date;
 
                     // Iterar hasta que encuentra un tag de fin del host.
                     while (!lineas[numLinea].Contains(REPORT_HOST_END_TAG))
@@ -643,14 +666,15 @@ namespace ParserNessus.Controllers
                                                       bool IncludePlugIn, bool IncludeSeeAlso,
                                                       bool IncludeXref, bool IncludeOS,
                                                       bool IncludeMac)
-        {
-
+        {          
             // El número total de filas que debe tener el archivo de salida.
             int tamaño = 1;   // El encabezado
             int indice = 1;
             foreach (AuxHost host in Report.Hosts)
             {
                 tamaño += host.Vulnerabilities.Count;
+                System.Diagnostics.Debug.WriteLine("Start: " + host.Host.HostStart);
+                System.Diagnostics.Debug.WriteLine("End: " + host.Host.HostEnd);
             }
 
             string[] lineas = new string[tamaño];
