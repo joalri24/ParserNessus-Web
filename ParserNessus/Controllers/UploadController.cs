@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 
@@ -69,6 +70,12 @@ namespace ParserNessus.Controllers
 
 
         //-----------------------------------------------------------------------------------
+        // Properties
+        //-----------------------------------------------------------------------------------
+
+        private ApplicationDbContext db = new ApplicationDbContext();
+
+        //-----------------------------------------------------------------------------------
         // Actions
         //-----------------------------------------------------------------------------------
 
@@ -84,7 +91,7 @@ namespace ParserNessus.Controllers
         /// <param name="file"></param>
         /// <returns></returns>
         [HttpPost]
-        public ActionResult Upload(HttpPostedFileBase file, bool NoSeverity = false, bool Sinopsis = true,
+        public async Task<ActionResult> Upload(HttpPostedFileBase file, bool NoSeverity = false, bool Sinopsis = true,
                                                             bool Ip = true, bool Port = true,
                                                             bool Description = false, bool Solution = false,
                                                             bool NetBios = false, bool Protocol = false,
@@ -100,9 +107,25 @@ namespace ParserNessus.Controllers
                 var fileName = Path.GetFileName(file.FileName);
                 var path = Path.Combine(Server.MapPath(UPLOAD_DIR), fileName);
                 file.SaveAs(path);
-                
-                // Reads the uploaded file and generates the cvs file.
+
+                // Reads the uploaded file, saves the data in the 
+                // database and generates the cvs file.
                 AuxReport reporte = ReadFile(path,NoSeverity);
+
+                //---- Save the data in the database ----
+                db.Reports.Add(reporte.Report);
+                await db.SaveChangesAsync();
+
+                foreach (AuxHost host in reporte.Hosts)
+                {
+                    host.Host.ReportId = reporte.Report.Id;
+                    db.Hosts.Add(host.Host);
+                }
+
+                await db.SaveChangesAsync();
+
+
+
                 string newPath = WriteCsvFile(reporte, Sinopsis, Ip, Port, Description, Solution, NetBios, Protocol, Severity, Exploitable, Cve, Bid, Cvss, PlugIn, SeeAlso, Xref, OS, Mac);
 
                 return RedirectToAction("Download", new { path = newPath, fileName = reporte.Report.Name + ".cvs" });
@@ -673,8 +696,6 @@ namespace ParserNessus.Controllers
             foreach (AuxHost host in Report.Hosts)
             {
                 tamaño += host.Vulnerabilities.Count;
-                System.Diagnostics.Debug.WriteLine("Start: " + host.Host.HostStart);
-                System.Diagnostics.Debug.WriteLine("End: " + host.Host.HostEnd);
             }
 
             string[] lineas = new string[tamaño];
@@ -956,6 +977,25 @@ namespace ParserNessus.Controllers
             System.IO.File.WriteAllLines(path, lineas);
             return path;
         }
+
+
+        /// <summary>
+        /// Saves the data of the uploaded Nessus report into the database
+        /// </summary>
+        /// <param name="report"></param>
+        private async void SaveData(AuxReport report)
+        {
+            // Saves the Report data
+            db.Reports.Add(report.Report);
+
+            // Saves the Hosts data
+
+            // Saves the vulnerability data. 
+
+            await db.SaveChangesAsync();
+        }
+
+
         //-----------------------------------------------------------------------------------
         // Auxiliary classes
         //-----------------------------------------------------------------------------------
