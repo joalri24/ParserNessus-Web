@@ -121,9 +121,19 @@ namespace ParserNessus.Controllers
                     host.Host.ReportId = reporte.Report.Id;
                     db.Hosts.Add(host.Host);
                 }
-
                 await db.SaveChangesAsync();
-
+                foreach (AuxHost host in reporte.Hosts)
+                {
+                    foreach(var vulnerability in host.Vulnerabilities)
+                    {
+                        if(vulnerability.Severity > 0)  // Saves only the real vulnerabilities.
+                        {
+                            vulnerability.HostId = host.Host.Id;
+                            db.Vulnerabilities.Add(vulnerability);
+                        }
+                    }
+                }
+                await db.SaveChangesAsync();
 
 
                 string newPath = WriteCsvFile(reporte, Sinopsis, Ip, Port, Description, Solution, NetBios, Protocol, Severity, Exploitable, Cve, Bid, Cvss, PlugIn, SeeAlso, Xref, OS, Mac);
