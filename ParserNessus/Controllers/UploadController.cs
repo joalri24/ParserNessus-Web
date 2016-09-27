@@ -134,10 +134,9 @@ namespace ParserNessus.Controllers
                     }
                 }
                 await db.SaveChangesAsync();
-
+                //---- --------------------------------
 
                 string newPath = WriteCsvFile(reporte, Sinopsis, Ip, Port, Description, Solution, NetBios, Protocol, Severity, Exploitable, Cve, Bid, Cvss, PlugIn, SeeAlso, Xref, OS, Mac);
-
                 return RedirectToAction("Download", new { path = newPath, fileName = reporte.Report.Name + ".cvs" });
             }
 
@@ -154,6 +153,8 @@ namespace ParserNessus.Controllers
         public FileResult Download(string path, string fileName)
         {
             byte[] fileBytes = System.IO.File.ReadAllBytes(path);
+            // Deletes the file
+            System.IO.File.Delete(path);
             return File(fileBytes, System.Net.Mime.MediaTypeNames.Application.Octet, fileName);
         }
 
@@ -682,6 +683,8 @@ namespace ParserNessus.Controllers
                 numLinea++;
             }
 
+            // Deletes the file
+            System.IO.File.Delete(fileName);
             return reporte;
         }
 
