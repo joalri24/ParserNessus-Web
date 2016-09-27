@@ -126,11 +126,8 @@ namespace ParserNessus.Controllers
                 {
                     foreach(var vulnerability in host.Vulnerabilities)
                     {
-                        if(vulnerability.Severity > 0)  // Saves only the real vulnerabilities.
-                        {
                             vulnerability.HostId = host.Host.Id;
-                            db.Vulnerabilities.Add(vulnerability);
-                        }
+                            db.Vulnerabilities.Add(vulnerability);        
                     }
                 }
                 await db.SaveChangesAsync();
