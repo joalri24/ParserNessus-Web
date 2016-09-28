@@ -2,104 +2,118 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
-using System.Data.Entity.Infrastructure;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
-using System.Web.Http;
-using System.Web.Http.Description;
+using System.Net;
+using System.Web;
+using System.Web.Mvc;
 using ParserNessus.Models;
 
 namespace ParserNessus.Controllers
 {
-    public class ReportsController : ApiController
+    public class ReportsController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();
 
-        // GET: api/Reports
-        public IQueryable<Report> GetReports()
+        // GET: Reports
+        public async Task<ActionResult> Index()
         {
-            return db.Reports;
+            return View(await db.Reports.ToListAsync());
         }
 
-        // GET: api/Reports/5
-        [ResponseType(typeof(Report))]
-        public async Task<IHttpActionResult> GetReport(int id)
+        // GET: Reports/Details/5
+        public async Task<ActionResult> Details(int? id)
         {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
             Report report = await db.Reports.FindAsync(id);
             if (report == null)
             {
-                return NotFound();
+                return HttpNotFound();
             }
-
-            return Ok(report);
+            return View(report);
         }
 
-        // PUT: api/Reports/5
-        [ResponseType(typeof(void))]
-        public async Task<IHttpActionResult> PutReport(int id, Report report)
+        // GET: Reports/Create
+        public ActionResult Create()
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+            return View();
+        }
 
-            if (id != report.Id)
+        // POST: Reports/Create
+        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
+        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> Create([Bind(Include = "Id,Name,Date,Comments,IncludesSeverity0Items")] Report report)
+        {
+            if (ModelState.IsValid)
             {
-                return BadRequest();
-            }
-
-            db.Entry(report).State = EntityState.Modified;
-
-            try
-            {
+                db.Reports.Add(report);
                 await db.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ReportExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return RedirectToAction("Index");
             }
 
-            return StatusCode(HttpStatusCode.NoContent);
+            return View(report);
         }
 
-        // POST: api/Reports
-        [ResponseType(typeof(Report))]
-        public async Task<IHttpActionResult> PostReport(Report report)
+        // GET: Reports/Edit/5
+        public async Task<ActionResult> Edit(int? id)
         {
-            if (!ModelState.IsValid)
+            if (id == null)
             {
-                return BadRequest(ModelState);
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-
-            db.Reports.Add(report);
-            await db.SaveChangesAsync();
-
-            return CreatedAtRoute("DefaultApi", new { id = report.Id }, report);
-        }
-
-        // DELETE: api/Reports/5
-        [ResponseType(typeof(Report))]
-        public async Task<IHttpActionResult> DeleteReport(int id)
-        {
             Report report = await db.Reports.FindAsync(id);
             if (report == null)
             {
-                return NotFound();
+                return HttpNotFound();
             }
+            return View(report);
+        }
 
+        // POST: Reports/Edit/5
+        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
+        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> Edit([Bind(Include = "Id,Name,Date,Comments,IncludesSeverity0Items")] Report report)
+        {
+            if (ModelState.IsValid)
+            {
+                db.Entry(report).State = EntityState.Modified;
+                await db.SaveChangesAsync();
+                return RedirectToAction("Index");
+            }
+            return View(report);
+        }
+
+        // GET: Reports/Delete/5
+        public async Task<ActionResult> Delete(int? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            Report report = await db.Reports.FindAsync(id);
+            if (report == null)
+            {
+                return HttpNotFound();
+            }
+            return View(report);
+        }
+
+        // POST: Reports/Delete/5
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> DeleteConfirmed(int id)
+        {
+            Report report = await db.Reports.FindAsync(id);
             db.Reports.Remove(report);
             await db.SaveChangesAsync();
-
-            return Ok(report);
+            return RedirectToAction("Index");
         }
 
         protected override void Dispose(bool disposing)
@@ -109,11 +123,6 @@ namespace ParserNessus.Controllers
                 db.Dispose();
             }
             base.Dispose(disposing);
-        }
-
-        private bool ReportExists(int id)
-        {
-            return db.Reports.Count(e => e.Id == id) > 0;
         }
     }
 }
