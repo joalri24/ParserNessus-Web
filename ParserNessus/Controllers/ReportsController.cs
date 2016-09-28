@@ -42,6 +42,7 @@ namespace ParserNessus.Controllers
             return View();
         }
 
+        /** This service is not needed 
         // POST: Reports/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
@@ -58,6 +59,7 @@ namespace ParserNessus.Controllers
 
             return View(report);
         }
+        */
 
         // GET: Reports/Edit/5
         public async Task<ActionResult> Edit(int? id)
