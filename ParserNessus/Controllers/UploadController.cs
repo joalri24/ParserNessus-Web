@@ -91,7 +91,7 @@ namespace ParserNessus.Controllers
         /// <param name="file"></param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<ActionResult> Upload(HttpPostedFileBase file, bool NoSeverity = false, bool Sinopsis = true,
+        public async Task<ActionResult> Upload(HttpPostedFileBase file, string Name ="New report", bool NoSeverity = false, bool Sinopsis = true,
                                                             bool Ip = true, bool Port = true,
                                                             bool Description = false, bool Solution = false,
                                                             bool NetBios = false, bool Protocol = false,
@@ -110,7 +110,7 @@ namespace ParserNessus.Controllers
 
                 // Reads the uploaded file, saves the data in the 
                 // database and generates the cvs file.
-                AuxReport reporte = ReadFile(path,NoSeverity);
+                AuxReport reporte = ReadFile(path,NoSeverity, Name);
 
                 //---- Save the data in the database ----
                 db.Reports.Add(reporte.Report);
@@ -169,13 +169,12 @@ namespace ParserNessus.Controllers
         /// <returns>Returns an AuxReport object with the relevant data of the file</returns>
         /// <param name="fileName"></param>
         /// <param name="NoSeverity">Says if items with no severity are going to be read</param>
-        private AuxReport ReadFile(string fileName, bool ReadNoSeverityItems)
+        private AuxReport ReadFile(string fileName, bool ReadNoSeverityItems, string ReportName)
         {
 
             AuxReport reporte = new AuxReport();
             string[] lineas = System.IO.File.ReadAllLines(fileName);
             int numLinea = 0;
-            string reportName = "";
 
             // Iterar hasta que aparezca el tag "<Report name"
             while (!lineas[numLinea].Contains(REPORT_NAME_TAG))
@@ -183,8 +182,8 @@ namespace ParserNessus.Controllers
 
             // Leer el nombre del reporte.
             // Eje: <Report name="TG" xmlns:cm="http://www.nessus.org/cm">
-            reportName = Regex.Split(lineas[numLinea], REPORT_NAME_TAG)[1].Split('"')[0];
-            reporte.Report.Name = reportName;
+            //reportName = Regex.Split(lineas[numLinea], REPORT_NAME_TAG)[1].Split('"')[0];
+            reporte.Report.Name = ReportName;
 
             // Iterar hasta el final del reporte: mientras la línea no contenga "</Report>":
             while (!lineas[numLinea].Contains(REPORT_END_TAG))
@@ -1027,7 +1026,7 @@ namespace ParserNessus.Controllers
             public AuxReport()
             {
                 Hosts = new List<AuxHost>();
-                Report = new Report();
+                Report = new Report() { Date = DateTime.Now};
             }
         }
 
