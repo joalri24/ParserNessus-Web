@@ -226,6 +226,10 @@
     <Compile Include="Migrations\201609281440362_UpdateReportModel.Designer.cs">
       <DependentUpon>201609281440362_UpdateReportModel.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201609281606088_AddColumn_NoSeverity.cs" />
+    <Compile Include="Migrations\201609281606088_AddColumn_NoSeverity.Designer.cs">
+      <DependentUpon>201609281606088_AddColumn_NoSeverity.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\Host.cs" />
@@ -313,6 +317,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201609281440362_UpdateReportModel.resx">
       <DependentUpon>201609281440362_UpdateReportModel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201609281606088_AddColumn_NoSeverity.resx">
+      <DependentUpon>201609281606088_AddColumn_NoSeverity.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

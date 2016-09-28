@@ -11,5 +11,6 @@ namespace ParserNessus.Models
         public string Name { get; set; }
         public DateTime Date { get; set; }
         public string Comments { get; set; }
+        public bool IncludesSeverity0Items { get; set; }
     }
 }

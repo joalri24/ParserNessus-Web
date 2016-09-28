@@ -184,6 +184,7 @@ namespace ParserNessus.Controllers
             // Eje: <Report name="TG" xmlns:cm="http://www.nessus.org/cm">
             //reportName = Regex.Split(lineas[numLinea], REPORT_NAME_TAG)[1].Split('"')[0];
             reporte.Report.Name = ReportName;
+            reporte.Report.IncludesSeverity0Items = ReadNoSeverityItems;
 
             // Iterar hasta el final del reporte: mientras la línea no contenga "</Report>":
             while (!lineas[numLinea].Contains(REPORT_END_TAG))
